@@ -1,0 +1,17 @@
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# WordPress local
+wp-config.php
+wp-content/uploads/
+
+# Build artifacts (если появятся)
+node_modules/
+dist/
+build/
+
+# Secrets / deploy configs
+sftp.json

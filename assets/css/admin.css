@@ -1,2 +1,1 @@
-/* Simple icon for admin order action */
 .wc_actions .button.ycwc-send::after { content: "\f230"; font-family: dashicons; margin-left: 0.3em; }

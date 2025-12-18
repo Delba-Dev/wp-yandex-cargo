@@ -32,4 +32,3 @@ WooCommerce → Статус → Логи → источник `ycwc`
 
 GPL-2.0-or-later
 
-

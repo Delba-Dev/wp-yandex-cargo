@@ -14,8 +14,6 @@
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-// Отладочное логирование отключено для избежания ошибок заголовков
-
 define( 'YCWC_VERSION', '1.0.6' );
 define( 'YCWC_PATH', plugin_dir_path( __FILE__ ) );
 define( 'YCWC_URL', plugin_dir_url( __FILE__ ) );
@@ -23,30 +21,21 @@ define( 'YCWC_URL', plugin_dir_url( __FILE__ ) );
 require_once YCWC_PATH . 'includes/class-ycwc-settings.php';
 require_once YCWC_PATH . 'includes/class-ycwc-admin.php';
 
-// Инициализируем настройки сразу, чтобы страница настроек существовала
 YCWC_Settings::instance();
 
 /**
  * Bootstrap
  */
 add_action('plugins_loaded', function() {
-    // error_log('YCWC: Plugin loaded, checking WooCommerce...');
     if ( class_exists( 'WooCommerce' ) ) {
-        // error_log('YCWC: WooCommerce found, registering shipping method...');
-        // Отложенная загрузка класса метода доставки
         add_action('woocommerce_shipping_init', function(){
-            // error_log('YCWC: Loading shipping method class...');
             require_once YCWC_PATH . 'includes/class-ycwc-shipping-method.php';
         });
         add_filter('woocommerce_shipping_methods', function($methods){
             $methods['yandex_delivery_cargo'] = 'YCWC_Shipping_Method';
-            // error_log('YCWC: Shipping method registered: yandex_delivery_cargo');
             return $methods;
         });
-        // Переводы (languages/) не включены в минимальную публичную версию
-        // load_plugin_textdomain('ycwc', false, dirname(plugin_basename(__FILE__)) . '/languages');
     } else {
-        // error_log('YCWC: WooCommerce not found!');
     }
 });
 
@@ -57,7 +46,6 @@ add_action('wp_enqueue_scripts', function(){
     if ( function_exists('is_checkout') && is_checkout() ) {
         $opts = YCWC_Settings::instance()->get_options();
         
-        // Загружаем скрипт карты только если есть API ключ
         if ( ! empty( $opts['maps_api_key'] ) ) {
             wp_enqueue_script(
                 'ycwc-ymaps',
@@ -66,14 +54,12 @@ add_action('wp_enqueue_scripts', function(){
             );
         }
         
-        // Всегда загружаем наш скрипт, но он сам проверит наличие API ключа
         wp_enqueue_script(
             'ycwc-checkout-map',
             YCWC_URL . 'assets/js/checkout-map.js',
             array('jquery'), YCWC_VERSION, true
         );
         
-        // Передаем данные в JavaScript
         wp_localize_script('ycwc-checkout-map', 'YCWC_DATA', array(
             'warehouse_address' => $opts['warehouse_address'],
             'warehouse_lon' => $opts['warehouse_lon'],
